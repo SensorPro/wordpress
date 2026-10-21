@@ -1,0 +1,19 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "sensorpro/signup-form",
+	"title": "SensorPro Signup Form",
+	"category": "widgets",
+	"icon": "email-alt",
+	"description": "Signup form that adds contacts to SensorPro.",
+	"keywords": [ "newsletter", "signup", "email", "subscribe" ],
+	"textdomain": "sensorpro",
+	"attributes": {
+		"title": { "type": "string", "default": "" },
+		"tags": { "type": "string", "default": "" },
+		"buttonText": { "type": "string", "default": "" }
+	},
+	"supports": { "html": false, "align": [ "wide", "full" ] },
+	"editorScript": "file:./index.js",
+	"editorStyle": "sensorpro-form-editor"
+}

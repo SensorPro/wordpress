@@ -1,0 +1,7 @@
+.sensorpro-admin .sp-btn { background: #1a1a1a; border-color: #1a1a1a; color: #fff; }
+.sensorpro-admin .sp-btn:hover, .sensorpro-admin .sp-btn:focus { background: #f59731; border-color: #f59731; color: #fff; }
+.sensorpro-admin .button-primary.sp-btn-primary { background: #96ad36; border-color: #96ad36; color: #fff; }
+.sensorpro-admin .button-primary.sp-btn-primary:hover, .sensorpro-admin .button-primary.sp-btn-primary:focus { background: #f59731; border-color: #f59731; }
+.sensorpro-admin #sp-test-result { margin-left: 10px; font-weight: 600; }
+.sensorpro-admin #sp-test-result.sp-ok { color: #4f6b12; }
+.sensorpro-admin #sp-test-result.sp-err { color: #b32d2e; font-weight: 400; }

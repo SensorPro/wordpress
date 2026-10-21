@@ -1,0 +1,15 @@
+# Build output and local test files
+*.zip
+*.png
+*.log
+.env
+.env.*
+node_modules/
+vendor/
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+# Local test harness (never commit)
+mu/
+*mock*

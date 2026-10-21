@@ -1,0 +1,69 @@
+/* SensorPro signup form. Black for secondary buttons, green for the primary action, orange on hover. */
+.sensorpro-form {
+	--sp-green: #96ad36;
+	--sp-orange: #f59731;
+	--sp-black: #1a1a1a;
+	--sp-border: #d0d0d0;
+	max-width: 520px;
+	font-size: 16px;
+	line-height: 1.5;
+	box-sizing: border-box;
+}
+.sensorpro-form *,
+.sensorpro-form *::before,
+.sensorpro-form *::after { box-sizing: inherit; }
+.sensorpro-form__title { margin: 0 0 .75em; }
+.sensorpro-form__row { display: flex; gap: 12px; }
+.sensorpro-form__row > .sensorpro-form__field { flex: 1 1 0; min-width: 0; }
+.sensorpro-form__field { margin-bottom: 12px; }
+.sensorpro-form__field label { display: block; margin-bottom: 4px; font-weight: 600; font-size: .9em; }
+.sensorpro-form__req { color: #b32d2e; }
+.sensorpro-form input[type="email"],
+.sensorpro-form input[type="text"] {
+	width: 100%;
+	padding: 10px 12px;
+	border: 1px solid var(--sp-border);
+	border-radius: 4px;
+	background: #fff;
+	color: var(--sp-black);
+	font: inherit;
+}
+.sensorpro-form input[type="email"]:focus,
+.sensorpro-form input[type="text"]:focus {
+	outline: 2px solid var(--sp-green);
+	outline-offset: 1px;
+	border-color: var(--sp-green);
+}
+.sensorpro-form__consent { margin: 4px 0 14px; font-size: .875em; color: #444; }
+.sensorpro-form__consent label { display: flex; gap: 8px; align-items: flex-start; cursor: pointer; }
+.sensorpro-form__consent input { margin-top: 3px; flex: 0 0 auto; }
+.sensorpro-form button,
+.sensorpro-form .sensorpro-btn {
+	display: inline-block;
+	padding: 10px 22px;
+	border: 0;
+	border-radius: 4px;
+	background: var(--sp-black);
+	color: #fff;
+	font: inherit;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color .15s ease;
+}
+.sensorpro-form .sensorpro-form__submit { background: var(--sp-green); }
+.sensorpro-form button:hover,
+.sensorpro-form button:focus-visible { background: var(--sp-orange); color: #fff; }
+.sensorpro-form button:focus-visible { outline: 2px solid var(--sp-black); outline-offset: 2px; }
+.sensorpro-form button[disabled] { opacity: .65; cursor: wait; }
+.sensorpro-form__message { margin-top: 10px; font-size: .95em; min-height: 1.5em; }
+.sensorpro-form__message.is-success { color: #4f6b12; font-weight: 600; }
+.sensorpro-form__message.is-error { color: #b32d2e; }
+.sensorpro-form__hp { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; overflow: hidden; }
+.sensorpro-form.is-done .sensorpro-form__field,
+.sensorpro-form.is-done .sensorpro-form__row,
+.sensorpro-form.is-done .sensorpro-form__consent,
+.sensorpro-form.is-done .sensorpro-form__actions { display: none; }
+@media (max-width: 480px) {
+	.sensorpro-form__row { flex-direction: column; gap: 0; }
+	.sensorpro-form .sensorpro-form__submit { width: 100%; }
+}
