@@ -3,7 +3,7 @@
  * Plugin Name:       SensorPro Signup Forms
  * Plugin URI:        https://github.com/SensorPro/wordpress
  * Description:       Add a GDPR-friendly signup form to your site that adds contacts straight into your SensorPro account.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            SensorPro
@@ -31,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SENSORPRO_VERSION', '1.0.0' );
+define( 'SENSORPRO_VERSION', '1.0.1' );
 define( 'SENSORPRO_FILE', __FILE__ );
 define( 'SENSORPRO_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SENSORPRO_URL', plugin_dir_url( __FILE__ ) );

@@ -4,7 +4,7 @@ Tags: newsletter, signup form, email marketing, subscribe, gdpr
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -87,10 +87,17 @@ The form includes a security token that expires after about a day. If pages are 
 
 == Changelog ==
 
+= 1.0.1 =
+* Security hardening: every submitted form field is now sanitized as soon as it is read (no-JS and REST submissions), before validation or any filter runs.
+* Settings input is sanitized field by field.
+
 = 1.0.0 =
 * First release: signup form (shortcode, block, widget), settings page with connection test, consent checkbox, resubscribe on consent, honeypot and rate limiting.
 
 == Upgrade Notice ==
+
+= 1.0.1 =
+Security hardening of form input sanitization.
 
 = 1.0.0 =
 First release.

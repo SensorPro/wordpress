@@ -250,7 +250,7 @@ class SensorPro_Form {
 	 * @return WP_REST_Response
 	 */
 	public static function rest_subscribe( WP_REST_Request $req ) {
-		$r = self::process( $req->get_params() );
+		$r = self::process( self::sanitize_submission( $req->get_params() ) );
 		$s = sensorpro_get_settings();
 		if ( $r['ok'] ) {
 			return new WP_REST_Response(
@@ -276,12 +276,25 @@ class SensorPro_Form {
 	 * No-JS fallback via admin-post.php.
 	 */
 	public static function handle_post() {
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified in process().
-		$params = wp_unslash( $_POST );
+		// Each field is unslashed and sanitized as it is read. The nonce is verified in process().
+		// phpcs:disable WordPress.Security.NonceVerification.Missing
+		$params = array(
+			'sp_website'    => isset( $_POST['sp_website'] ) ? sanitize_text_field( wp_unslash( $_POST['sp_website'] ) ) : '',
+			'sp_nonce'      => isset( $_POST['sp_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['sp_nonce'] ) ) : '',
+			'sp_email'      => isset( $_POST['sp_email'] ) ? sanitize_email( sanitize_text_field( wp_unslash( $_POST['sp_email'] ) ) ) : '',
+			'sp_first_name' => isset( $_POST['sp_first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['sp_first_name'] ) ) : '',
+			'sp_last_name'  => isset( $_POST['sp_last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['sp_last_name'] ) ) : '',
+			'sp_consent'    => isset( $_POST['sp_consent'] ) ? absint( wp_unslash( $_POST['sp_consent'] ) ) : 0,
+			'sp_tags'       => isset( $_POST['sp_tags'] ) ? sanitize_text_field( wp_unslash( $_POST['sp_tags'] ) ) : '',
+			'sp_sig'        => isset( $_POST['sp_sig'] ) ? sanitize_key( wp_unslash( $_POST['sp_sig'] ) ) : '',
+			'sp_form'       => isset( $_POST['sp_form'] ) ? sanitize_key( wp_unslash( $_POST['sp_form'] ) ) : '',
+			'sp_return'     => isset( $_POST['sp_return'] ) && is_string( $_POST['sp_return'] ) ? esc_url_raw( wp_unslash( $_POST['sp_return'] ) ) : '',
+		);
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		$r      = self::process( $params );
 		$s      = sensorpro_get_settings();
-		$return = isset( $params['sp_return'] ) ? wp_validate_redirect( esc_url_raw( $params['sp_return'] ), home_url( '/' ) ) : home_url( '/' );
-		$form   = isset( $params['sp_form'] ) ? sanitize_key( $params['sp_form'] ) : '';
+		$return = '' !== $params['sp_return'] ? wp_validate_redirect( $params['sp_return'], home_url( '/' ) ) : home_url( '/' );
+		$form   = $params['sp_form'];
 		if ( $r['ok'] && $s['redirect_url'] ) {
 			wp_redirect( esc_url_raw( $s['redirect_url'] ) ); // phpcs:ignore WordPress.Security.SafeRedirect -- admin-configured URL.
 			exit;
@@ -298,19 +311,47 @@ class SensorPro_Form {
 	}
 
 	/**
+	 * Sanitize a submission (REST request params) field by field.
+	 *
+	 * Only the fields the form sends are kept; everything else is dropped.
+	 *
+	 * @param array $raw Raw params.
+	 * @return array Sanitized params.
+	 */
+	public static function sanitize_submission( $raw ) {
+		$raw  = is_array( $raw ) ? $raw : array();
+		$text = function ( $key ) use ( $raw ) {
+			return isset( $raw[ $key ] ) && is_scalar( $raw[ $key ] ) ? sanitize_text_field( (string) $raw[ $key ] ) : '';
+		};
+		return array(
+			'sp_website'    => $text( 'sp_website' ),
+			'sp_nonce'      => $text( 'sp_nonce' ),
+			'sp_email'      => sanitize_email( $text( 'sp_email' ) ),
+			'sp_first_name' => $text( 'sp_first_name' ),
+			'sp_last_name'  => $text( 'sp_last_name' ),
+			'sp_consent'    => absint( $text( 'sp_consent' ) ),
+			'sp_tags'       => $text( 'sp_tags' ),
+			'sp_sig'        => sanitize_key( $text( 'sp_sig' ) ),
+			'sp_form'       => sanitize_key( $text( 'sp_form' ) ),
+			'sp_return'     => isset( $raw['sp_return'] ) && is_string( $raw['sp_return'] ) ? esc_url_raw( $raw['sp_return'] ) : '',
+		);
+	}
+
+	/**
 	 * Visitor IP (REMOTE_ADDR only; proxies can be added via filter).
 	 *
 	 * @return string
 	 */
 	private static function ip() {
 		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
-		return (string) apply_filters( 'sensorpro_client_ip', $ip );
+		$ip = filter_var( $ip, FILTER_VALIDATE_IP ) ? $ip : '';
+		return sanitize_text_field( (string) apply_filters( 'sensorpro_client_ip', $ip ) );
 	}
 
 	/**
 	 * Validate and send a submission.
 	 *
-	 * @param array $p Unslashed params.
+	 * @param array $p Sanitized params from sanitize_submission() or handle_post().
 	 * @return array { ok: bool, code: string }
 	 */
 	public static function process( $p ) {

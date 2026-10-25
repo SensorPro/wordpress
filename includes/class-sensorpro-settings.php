@@ -75,7 +75,7 @@ class SensorPro_Settings {
 	/**
 	 * Sanitize settings. Blank secret fields keep the stored value.
 	 *
-	 * @param array $in Raw input.
+	 * @param array $in Raw input (already unslashed by options.php).
 	 * @return array
 	 */
 	public static function sanitize( $in ) {
@@ -83,7 +83,7 @@ class SensorPro_Settings {
 		$in  = is_array( $in ) ? $in : array();
 		$out = $old;
 
-		$base = isset( $in['api_base'] ) ? esc_url_raw( trim( $in['api_base'] ) ) : $old['api_base'];
+		$base = isset( $in['api_base'] ) ? esc_url_raw( trim( sanitize_text_field( $in['api_base'] ) ) ) : $old['api_base'];
 		if ( $base && 0 !== strpos( $base, 'https://' ) ) {
 			add_settings_error( SENSORPRO_OPTION, 'base', __( 'The API URL must start with https://.', 'sensorpro' ) );
 			$base = $old['api_base'];
@@ -93,23 +93,23 @@ class SensorPro_Settings {
 		foreach ( self::SECRET_FIELDS as $k ) {
 			if ( ! empty( $in[ $k . '_clear' ] ) ) {
 				$out[ $k ] = '';
-			} elseif ( isset( $in[ $k ] ) && '' !== trim( $in[ $k ] ) ) {
-				$out[ $k ] = trim( wp_unslash( $in[ $k ] ) );
+			} elseif ( isset( $in[ $k ] ) && '' !== sanitize_text_field( $in[ $k ] ) ) {
+				$out[ $k ] = sanitize_text_field( $in[ $k ] );
 			}
 		}
 		foreach ( array( 'organization', 'api_user', 'import_name', 'button_text' ) as $k ) {
-			$out[ $k ] = isset( $in[ $k ] ) ? sanitize_text_field( wp_unslash( $in[ $k ] ) ) : '';
+			$out[ $k ] = isset( $in[ $k ] ) ? sanitize_text_field( $in[ $k ] ) : '';
 		}
-		$out['tags'] = isset( $in['tags'] ) ? implode( ', ', SensorPro_Form::parse_tags( wp_unslash( $in['tags'] ) ) ) : '';
+		$out['tags'] = isset( $in['tags'] ) ? implode( ', ', SensorPro_Form::parse_tags( sanitize_text_field( $in['tags'] ) ) ) : '';
 		unset( $out['signup_form_id'] ); // Setting removed before 1.0.0.
 
 		foreach ( array( 'send_welcome', 'show_first_name', 'show_last_name', 'require_names', 'consent_enabled' ) as $k ) {
 			$out[ $k ] = empty( $in[ $k ] ) ? 0 : 1;
 		}
 
-		$out['consent_text']    = isset( $in['consent_text'] ) ? wp_kses( wp_unslash( $in['consent_text'] ), array( 'a' => array( 'href' => array(), 'target' => array(), 'rel' => array() ), 'strong' => array(), 'em' => array() ) ) : '';
-		$out['success_message'] = isset( $in['success_message'] ) ? sanitize_textarea_field( wp_unslash( $in['success_message'] ) ) : '';
-		$out['redirect_url']    = isset( $in['redirect_url'] ) ? esc_url_raw( trim( $in['redirect_url'] ) ) : '';
+		$out['consent_text']    = isset( $in['consent_text'] ) ? wp_kses( $in['consent_text'], array( 'a' => array( 'href' => array(), 'target' => array(), 'rel' => array() ), 'strong' => array(), 'em' => array() ) ) : '';
+		$out['success_message'] = isset( $in['success_message'] ) ? sanitize_textarea_field( $in['success_message'] ) : '';
+		$out['redirect_url']    = isset( $in['redirect_url'] ) ? esc_url_raw( trim( sanitize_text_field( $in['redirect_url'] ) ) ) : '';
 
 		$cf                   = isset( $in['consent_field'] ) ? sanitize_text_field( $in['consent_field'] ) : '';
 		$out['consent_field'] = in_array( $cf, self::consent_fields(), true ) ? $cf : '';
